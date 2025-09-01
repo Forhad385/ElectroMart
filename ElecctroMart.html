@@ -1,0 +1,1142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ElectroMart — Electronics E‑commerce Demo</title>
+  <style>
+    :root{
+      --bg:#0f172a; /* slate-900 */
+      --panel:#111827; /* gray-900 */
+      --muted:#1f2937; /* gray-800 */
+      --card:#0b1220; /* custom */
+      --text:#e5e7eb; /* gray-200 */
+      --sub:#9ca3af; /* gray-400 */
+      --brand:#22c55e; /* green-500 */
+      --brand-2:#3b82f6; /* blue-500 */
+      --accent:#f59e0b; /* amber-500 */
+      --danger:#ef4444; /* red-500 */
+      --radius:18px;
+      --shadow:0 20px 35px rgba(0,0,0,.35);
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:radial-gradient(1200px 600px at 10% -10%, #1e293b 0%, var(--bg) 40%),linear-gradient(180deg, #0b1220, var(--bg));color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial,sans-serif;}
+    a{color:inherit;text-decoration:none}
+    img{max-width:100%;display:block}
+    .container{max-width:1200px;margin:0 auto;padding:24px}
+    header{position:sticky;top:0;z-index:50;background:rgba(17,24,39,.7);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.06)}
+    .nav{display:flex;align-items:center;gap:16px;}
+    .brand{font-weight:800;font-size:22px;letter-spacing:.4px}
+    .brand span{color:var(--brand)}
+    .grow{flex:1}
+    .search{display:flex;gap:10px;align-items:center;background:var(--muted);border-radius:999px;padding:10px 14px;width:100%;max-width:520px;border:1px solid rgba(255,255,255,.06)}
+    .search input{all:unset;color:var(--text);width:100%}
+    .btn{cursor:pointer;border:1px solid transparent;border-radius:999px;padding:10px 16px;background:var(--brand);color:#04110a;font-weight:700;box-shadow:var(--shadow);transition:.2s}
+    .btn:hover{transform:translateY(-1px);filter:brightness(1.06)}
+    .btn.secondary{background:var(--muted);color:var(--text);border-color:rgba(255,255,255,.06)}
+    .btn.ghost{background:transparent;border-color:rgba(255,255,255,.14);color:var(--text)}
+    .pill{padding:6px 12px;border:1px solid rgba(255,255,255,.08);border-radius:999px;background:rgba(255,255,255,.04)}
+    .grid{display:grid;gap:18px}
+    .grid.cols-4{grid-template-columns:repeat(4,minmax(0,1fr))}
+    .grid.cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .grid.cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+    @media (max-width:1000px){.grid.cols-4{grid-template-columns:repeat(3,1fr)}}
+    @media (max-width:760px){.grid.cols-3,.grid.cols-4{grid-template-columns:repeat(2,1fr)}.search{display:none}}
+    @media (max-width:520px){.grid.cols-2,.grid.cols-3,.grid.cols-4{grid-template-columns:1fr}}
+    .card{background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
+    .card .content{padding:14px}
+    .price{font-weight:800}
+    .muted{color:var(--sub)}
+    .hero{display:grid;grid-template-columns:1.5fr 1fr;gap:20px;align-items:center}
+    @media (max-width:900px){.hero{grid-template-columns:1fr}}
+    .banner{background:linear-gradient(135deg,#0ea5e9,#22c55e);border-radius:var(--radius);padding:34px;position:relative;overflow:hidden}
+    .banner h1{margin:0 0 8px;font-size:42px}
+    .banner p{margin:0 0 16px;color:#052014}
+    .banner img.mock{position:absolute;right:-40px;bottom:-20px;opacity:.15;filter:drop-shadow(0 20px 40px rgba(0,0,0,.5));width:420px}
+    .toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+    .toolbar select,.toolbar input{background:var(--muted);border:1px solid rgba(255,255,255,.08);color:var(--text);padding:10px 12px;border-radius:12px}
+    .toolbar input{width:240px}
+    .tabs{display:flex;gap:8px;flex-wrap:wrap}
+    .tab{cursor:pointer;padding:10px 14px;border-radius:12px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04)}
+    .tab.active{background:var(--brand);color:#07160e;font-weight:800}
+    .footer{color:var(--sub);padding:24px 0;border-top:1px solid rgba(255,255,255,.06);margin-top:40px}
+    .section-title{display:flex;justify-content:space-between;align-items:center;margin:24px 0 12px}
+    /* Modal */
+    dialog{border:none;border-radius:20px;padding:0;background:var(--panel);color:var(--text);box-shadow:var(--shadow);width:min(760px,95vw)}
+    dialog::backdrop{background:rgba(0,0,0,.6)}
+    .modal-head{display:flex;justify-content:space-between;align-items:center;padding:16px 18px;border-bottom:1px solid rgba(255,255,255,.08)}
+    .modal-body{padding:18px}
+    .x{cursor:pointer;border:none;background:transparent;color:var(--text);font-size:22px}
+    .flex{display:flex;gap:18px;align-items:flex-start}
+    .flex-col{display:flex;flex-direction:column;gap:12px}
+    .w-50{width:50%}
+    @media (max-width:760px){.flex{flex-direction:column}.w-50{width:100%}}
+    .qty{display:flex;align-items:center;gap:8px}
+    .qty button{width:28px;height:28px;border-radius:8px;border:1px solid rgba(255,255,255,.2);background:transparent;color:var(--text);cursor:pointer}
+    .cart-row{display:grid;grid-template-columns:64px 1fr auto auto auto;gap:12px;align-items:center;padding:12px;border-bottom:1px dashed rgba(255,255,255,.08)}
+    .cart-row .remove{color:var(--danger);cursor:pointer}
+    .kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+    @media (max-width:760px){.kpi{grid-template-columns:repeat(2,1fr)}}
+    .kpi .tile{padding:16px;border-radius:16px;background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.08)}
+    small.code{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;color:var(--sub)}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container nav">
+      <a href="#home" class="brand">Electro<span>Mart</span></a>
+      <div class="grow"></div>
+      <div class="search"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21 21l-4.3-4.3M10.5 18a7.5 7.5 0 100-15 7.5 7.5 0 000 15z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <input id="globalSearch" placeholder="Search products... (e.g., laptop)" />
+      </div>
+      <button class="btn secondary" id="btnLogin">Login</button>
+      <button class="btn" id="btnCart">Cart (<span id="cartCount">0</span>)</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- HERO / HOME -->
+    <section id="home" class="hero">
+      <div class="banner">
+        <h1>Everything Electronics</h1>
+        <p>Shop laptops, mobiles, tablets, headphones, and accessories at unbeatable prices.</p>
+        <div class="toolbar">
+          <a href="#shop" class="btn">Shop Now</a>
+          <a href="#deals" class="btn ghost">Today’s Deals</a>
+          <span class="pill">Free Delivery over ৳5,000</span>
+        </div>
+        <img class="mock" src="https://images.unsplash.com/photo-1518779578993-ec3579fee39f?q=80&w=1200&auto=format&fit=crop" alt="electronics"/>
+      </div>
+      <div class="grid cols-2">
+        <div class="card">
+          <img src="https://images.unsplash.com/photo-1517336714731-489689fd1ca8?q=80&w=800&auto=format&fit=crop" alt="Laptops"/>
+          <div class="content">
+            <div class="section-title"><h3>Laptops</h3><a href="#shop" class="pill" data-cat="Laptop">Shop</a></div>
+            <p class="muted">Powerful ultrabooks, gaming rigs, and budget laptops.</p>
+          </div>
+        </div>
+        <div class="card">
+          <img src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?q=80&w=800&auto=format&fit=crop" alt="Mobiles"/>
+          <div class="content">
+            <div class="section-title"><h3>Mobiles</h3><a href="#shop" class="pill" data-cat="Mobile">Shop</a></div>
+            <p class="muted">Android, iOS, flagship and value phones.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SHOP LISTING -->
+    <section id="shop" style="margin-top:36px">
+      <div class="section-title">
+        <h2>Products</h2>
+        <div class="tabs" id="catTabs"></div>
+      </div>
+      <div class="toolbar" style="margin-bottom:12px">
+        <input id="search" placeholder="Filter within category..." />
+        <select id="sort">
+          <option value="pop">Sort: Popular</option>
+          <option value="lh">Price: Low → High</option>
+          <option value="hl">Price: High → Low</option>
+          <option value="az">Name: A → Z</option>
+        </select>
+        <div class="pill">Items found: <span id="found">0</span></div>
+      </div>
+      <div class="grid cols-4" id="productGrid"></div>
+    </section>
+
+    <!-- DEALS (simple showcase) -->
+    <section id="deals" style="margin-top:36px">
+      <div class="section-title"><h2>Today’s Deals</h2><a href="#shop" class="pill">View all</a></div>
+      <div class="grid cols-3" id="dealGrid"></div>
+    </section>
+
+    <!-- ADMIN (demo) -->
+    <section id="admin" style="margin-top:36px">
+      <div class="section-title"><h2>Admin Panel (Demo)</h2><span class="pill">No backend — uses localStorage</span></div>
+      <div class="kpi">
+        <div class="tile"><div class="muted">Total Products</div><div id="kpiProducts" class="price">0</div></div>
+        <div class="tile"><div class="muted">Total Users</div><div id="kpiUsers" class="price">0</div></div>
+        <div class="tile"><div class="muted">Orders (Demo)</div><div id="kpiOrders" class="price">0</div></div>
+        <div class="tile"><div class="muted">Revenue (Demo)</div><div id="kpiRevenue" class="price">৳0</div></div>
+      </div>
+      <div class="card" style="margin-top:16px">
+        <div class="content">
+          <h3>Add Product</h3>
+          <div class="grid cols-2">
+            <input id="ap_name" placeholder="Name"/>
+            <input id="ap_cat" placeholder="Category (Laptop/Mobile/Tablet/Headphone/Accessory)"/>
+            <input id="ap_price" type="number" placeholder="Price (number)"/>
+            <input id="ap_img" placeholder="Image URL"/>
+          </div>
+          <div class="flex" style="margin-top:12px"><button class="btn" id="btnAddProduct">Add</button><span class="muted">Added items persist in localStorage.</span></div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div class="grid cols-3">
+        <div>
+          <div class="brand">Electro<span>Mart</span></div>
+          <p class="muted">Your one‑stop electronics shop. This is a front‑end demo; hook it to a PHP/MySQL backend.</p>
+        </div>
+        <div>
+          <div class="muted">Quick Links</div>
+          <p><a href="#home">Home</a> · <a href="#shop">Shop</a> · <a href="#admin">Admin</a></p>
+        </div>
+        <div>
+          <div class="muted">Contact</div>
+          <p>support@electromart.local</p>
+          <small class="code">Demo build · No real checkout</small>
+        </div>
+      </div>
+    </footer>
+  </main>
+
+  <!-- PRODUCT MODAL -->
+  <dialog id="productModal">
+    <div class="modal-head"><strong id="pm_title">Product</strong><button class="x" onclick="productModal.close()">×</button></div>
+    <div class="modal-body">
+      <div class="flex">
+        <div class="w-50"><img id="pm_image" alt="product"/></div>
+        <div class="w-50 flex-col">
+          <div class="muted" id="pm_category"></div>
+          <div class="price" id="pm_price">৳0</div>
+          <p id="pm_desc" class="muted"></p>
+          <div class="qty">
+            <button onclick="chgQty(-1)">−</button>
+            <span id="pm_qty">1</span>
+            <button onclick="chgQty(1)">+</button>
+          </div>
+          <div class="flex" style="margin-top:10px">
+            <button class="btn" id="pm_add">Add to Cart</button>
+            <button class="btn secondary" onclick="productModal.close()">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- CART MODAL -->
+  <dialog id="cartModal">
+    <div class="modal-head"><strong>Shopping Cart</strong><button class="x" onclick="cartModal.close()">×</button></div>
+    <div class="modal-body">
+      <div id="cartList"></div>
+      <div class="flex" style="justify-content:space-between;margin-top:12px">
+        <div><span class="muted">Subtotal:</span> <strong id="cartSubtotal">৳0</strong></div>
+        <div class="flex" style="gap:8px">
+          <button class="btn secondary" onclick="clearCart()">Clear</button>
+          <button class="btn" id="btnCheckout">Checkout</button>
+        </div>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- CHECKOUT MODAL -->
+  <dialog id="checkoutModal">
+    <div class="modal-head"><strong>Checkout</strong><button class="x" onclick="checkoutModal.close()">×</button></div>
+    <div class="modal-body">
+      <div class="grid cols-2">
+        <div class="card"><div class="content">
+          <h3>Customer Info</h3>
+          <div class="flex-col">
+            <input id="co_name" placeholder="Full Name"/>
+            <input id="co_email" placeholder="Email"/>
+            <input id="co_phone" placeholder="Phone"/>
+            <input id="co_address" placeholder="Address"/>
+            <select id="co_payment">
+              <option value="cod">Cash on Delivery</option>
+              <option value="card" disabled>Card (Demo)</option>
+            </select>
+          </div>
+        </div></div>
+        <div class="card"><div class="content">
+          <h3>Order Summary</h3>
+          <div id="co_summary"></div>
+          <div style="margin-top:12px"><span class="muted">Total:</span> <strong id="co_total">৳0</strong></div>
+          <button class="btn" style="margin-top:12px" id="co_place">Place Order</button>
+        </div></div>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- AUTH MODAL -->
+  <dialog id="authModal">
+    <div class="modal-head"><strong id="authTitle">Login</strong><button class="x" onclick="authModal.close()">×</button></div>
+    <div class="modal-body">
+      <div class="grid cols-2">
+        <div class="card"><div class="content">
+          <h3>Login</h3>
+          <input id="li_email" placeholder="Email"/>
+          <input id="li_pass" placeholder="Password" type="password" style="margin-top:8px"/>
+          <button class="btn" style="margin-top:12px" id="btnDoLogin">Login</button>
+        </div></div>
+        <div class="card"><div class="content">
+          <h3>Register</h3>
+          <input id="re_name" placeholder="Name"/>
+          <input id="re_email" placeholder="Email" style="margin-top:8px"/>
+          <input id="re_phone" placeholder="Phone" style="margin-top:8px"/>
+          <input id="re_pass" placeholder="Password" type="password" style="margin-top:8px"/>
+          <button class="btn" style="margin-top:12px" id="btnDoRegister">Register</button>
+        </div></div>
+      </div>
+      <small class="muted">Demo auth stores users in <code>localStorage</code>. Replace with secure PHP sessions + hashed passwords in production.</small>
+    </div>
+  </dialog>
+
+  <script>
+    /* ------------------------------
+       Data (seed + storage)
+    ------------------------------ */
+    const seedProducts = [
+      {id:'LAP-1001', name:'AeroBook X14 Ultrabook', category:'Laptop', price:89990, rating:4.6, image:'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?q=80&w=1200&auto=format&fit=crop', desc:'14" FHD, i5 12th Gen, 16GB RAM, 512GB SSD, backlit keyboard.'},
+      {id:'LAP-1002', name:'Titan Pro 15 Gaming', category:'Laptop', price:139990, rating:4.7, image:'https://images.unsplash.com/photo-1518779578993-ec3579fee39f?q=80&w=1200&auto=format&fit=crop', desc:'15.6" 165Hz, i7, RTX 4060, 16GB RAM, 1TB SSD.'},
+      {id:'MOB-2001', name:'Nova One 5G', category:'Mobile', price:24990, rating:4.4, image:'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?q=80&w=1200&auto=format&fit=crop', desc:'6.5" AMOLED, 8GB/128GB, 50MP camera, 5000mAh.'},
+      {id:'MOB-2002', name:'iFruit 14', category:'Mobile', price:119999, rating:4.8, image:'https://images.unsplash.com/photo-1510557880182-3bb7a4ab07cc?q=80&w=1200&auto=format&fit=crop', desc:'6.1" OLED, 128GB, A‑series chip, dual camera.'},
+      {id:'TAB-3001', name:'Tabster 11 Pro', category:'Tablet', price:44990, rating:4.5, image:'https://images.unsplash.com/photo-1537498425277-c283d32ef9db?q=80&w=1200&auto=format&fit=crop', desc:'11" 120Hz, stylus support, 8GB/256GB.'},
+      {id:'HDP-4001', name:'SonicMax Headphones', category:'Headphone', price:7990, rating:4.2, image:'https://images.unsplash.com/photo-1518441902111-a14bb8160f8c?q=80&w=1200&auto=format&fit=crop', desc:'Over‑ear, ANC, 40h battery, BT 5.3.'},
+      {id:'ACC-5001', name:'USB‑C GaN Charger 65W', category:'Accessory', price:2990, rating:4.6, image:'https://images.unsplash.com/photo-1555617107-08c5a5df237b?q=80&w=1200&auto=format&fit=crop', desc:'Compact multi‑port fast charger.'},
+      {id:'ACC-5002', name:'NVMe SSD 1TB', category:'Accessory', price:7990, rating:4.7, image:'https://images.unsplash.com/photo-1591488320449-011701bb6702?q=80&w=1200&auto=format&fit=crop', desc:'PCIe Gen3 x4, up to 3500MB/s.'}
+    ];
+
+    const store = {
+      get products(){
+        const ls = localStorage.getItem('em_products');
+        if(ls){try{return JSON.parse(ls)}catch(e){}}
+        return seedProducts;
+      },
+      set products(v){localStorage.setItem('em_products', JSON.stringify(v))},
+      get cart(){
+        const ls = localStorage.getItem('em_cart');
+        return ls? JSON.parse(ls): [];
+      },
+      set cart(v){localStorage.setItem('em_cart', JSON.stringify(v))},
+      get users(){
+        const ls = localStorage.getItem('em_users');
+        return ls? JSON.parse(ls): [];
+      },
+      set users(v){localStorage.setItem('em_users', JSON.stringify(v))},
+      get orders(){
+        const ls = localStorage.getItem('em_orders');
+        return ls? JSON.parse(ls): [];
+      },
+      set orders(v){localStorage.setItem('em_orders', JSON.stringify(v))},
+      get me(){
+        const ls = localStorage.getItem('em_me');
+        return ls? JSON.parse(ls): null;
+      },
+      set me(v){ if(v) localStorage.setItem('em_me', JSON.stringify(v)); else localStorage.removeItem('em_me'); }
+    };
+
+    /* ------------------------------
+       UI Helpers
+    ------------------------------ */
+    const grid = document.getElementById('productGrid');
+    const deals = document.getElementById('dealGrid');
+    const catTabs = document.getElementById('catTabs');
+    const found = document.getElementById('found');
+    const sortSel = document.getElementById('sort');
+    const search = document.getElementById('search');
+    const globalSearch = document.getElementById('globalSearch');
+    const cartCount = document.getElementById('cartCount');
+    const productModal = document.getElementById('productModal');
+    const cartModal = document.getElementById('cartModal');
+    const checkoutModal = document.getElementById('checkoutModal');
+    const authModal = document.getElementById('authModal');
+
+    let currentCategory = 'All';
+    let modalProduct = null;
+    let modalQty = 1;
+
+    const categories = ['All','Laptop','Mobile','Tablet','Headphone','Accessory'];
+
+    function money(n){ return '৳' + n.toLocaleString('en-IN'); }
+
+    function renderTabs(){
+      catTabs.innerHTML = '';
+      categories.forEach(cat=>{
+        const el = document.createElement('div');
+        el.className = 'tab' + (cat===currentCategory?' active':'');
+        el.textContent = cat;
+        el.onclick = ()=>{currentCategory=cat; renderProducts();}
+        catTabs.appendChild(el);
+      })
+    }
+
+    function queryProducts(){
+      let list = [...store.products];
+      if(currentCategory!=='All') list = list.filter(p=>p.category===currentCategory);
+      const q = (search.value||'').toLowerCase();
+      if(q) list = list.filter(p=> (p.name+p.desc+p.category).toLowerCase().includes(q));
+      switch(sortSel.value){
+        case 'lh': list.sort((a,b)=>a.price-b.price); break;
+        case 'hl': list.sort((a,b)=>b.price-a.price); break;
+        case 'az': list.sort((a,b)=>a.name.localeCompare(b.name)); break;
+        default: list.sort((a,b)=>b.rating-a.rating); break;
+      }
+      return list;
+    }
+
+    function cardHtml(p){
+      return `<div class="card">
+        <img src="${p.image}" alt="${p.name}">
+        <div class="content">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
+            <strong>${p.name}</strong>
+            <span class="pill">${p.category}</span>
+          </div>
+          <div class="muted">★ ${p.rating.toFixed(1)}</div>
+          <div class="flex" style="justify-content:space-between;align-items:center">
+            <div class="price">${money(p.price)}</div>
+            <div class="flex" style="gap:8px">
+              <button class="btn secondary" onclick='openProduct("${p.id}")'>Details</button>
+              <button class="btn" onclick='addToCart("${p.id}")'>Add</button>
+            </div>
+          </div>
+        </div>
+      </div>`
+    }
+
+    function renderProducts(){
+      const list = queryProducts();
+      found.textContent = list.length;
+      grid.innerHTML = list.map(cardHtml).join('');
+      // KPI updates
+      document.getElementById('kpiProducts').textContent = store.products.length;
+      document.getElementById('kpiUsers').textContent = store.users.length;
+      document.getElementById('kpiOrders').textContent = store.orders.length;
+      const rev = store.orders.reduce((s,o)=>s+o.total,0);
+      document.getElementById('kpiRevenue').textContent = money(rev);
+    }
+
+    function renderDeals(){
+      const list = [...store.products].sort((a,b)=>b.rating-a.rating).slice(0,3);
+      deals.innerHTML = list.map(p=>`<div class="card"><div class="content">
+        <div class="muted">Limited Time</div>
+        <h3>${p.name}</h3>
+        <p class="muted">${p.desc}</p>
+        <div class="flex" style="justify-content:space-between;align-items:center">
+          <div><span class="muted" style="text-decoration:line-through">${money(Math.round(p.price*1.12))}</span> <span class="price">${money(p.price)}</span></div>
+          <button class="btn" onclick='addToCart("${p.id}")'>Add to Cart</button>
+        </div>
+      </div></div>`).join('');
+    }
+
+    /* ------------------------------
+       Product Modal
+    ------------------------------ */
+    function openProduct(id){
+      const p = store.products.find(x=>x.id===id);
+      if(!p) return;
+      modalProduct = p; modalQty = 1;
+      document.getElementById('pm_title').textContent = p.name;
+      document.getElementById('pm_category').textContent = p.category + ' · ★ ' + p.rating.toFixed(1);
+      document.getElementById('pm_price').textContent = money(p.price);
+      document.getElementById('pm_desc').textContent = p.desc;
+      document.getElementById('pm_image').src = p.image;
+      document.getElementById('pm_qty').textContent = modalQty;
+      document.getElementById('pm_add').onclick = ()=>{ addToCart(p.id, modalQty); productModal.close(); };
+      productModal.showModal();
+    }
+    function chgQty(d){ modalQty = Math.max(1, modalQty + d); document.getElementById('pm_qty').textContent = modalQty; }
+
+    /* ------------------------------
+       Cart
+    ------------------------------ */
+    function addToCart(id, qty=1){
+      const cart = store.cart;
+      const item = cart.find(i=>i.id===id);
+      if(item) item.qty += qty; else cart.push({id, qty});
+      store.cart = cart; updateCartCount();
+    }
+    function updateCartCount(){ cartCount.textContent = store.cart.reduce((s,i)=>s+i.qty,0); }
+    function removeFromCart(id){ store.cart = store.cart.filter(i=>i.id!==id); renderCart(); updateCartCount(); }
+    function setQty(id,qty){ const c=store.cart; const it=c.find(i=>i.id===id); if(it){it.qty=Math.max(1,qty)} store.cart=c; renderCart(); updateCartCount(); }
+    function clearCart(){ store.cart = []; renderCart(); updateCartCount(); }
+
+    function renderCart(){
+      const cart = store.cart.map(i=>({ ...i, p: store.products.find(p=>p.id===i.id) })).filter(x=>x.p);
+      const list = document.getElementById('cartList');
+      if(cart.length===0){ list.innerHTML = '<p class="muted">Your cart is empty.</p>'; document.getElementById('cartSubtotal').textContent = money(0); return; }
+      let html=''; let sum=0;
+      cart.forEach(({id,qty,p})=>{
+        const line = p.price*qty; sum+=line;
+        html+=`<div class='cart-row'>
+          <img src='${p.image}' alt='${p.name}'>
+          <div><strong>${p.name}</strong><div class='muted'>${p.category}</div></div>
+          <div>${money(p.price)}</div>
+          <div class='qty'>
+            <button onclick='setQty("${id}", ${qty-1})'>−</button>
+            <span>${qty}</span>
+            <button onclick='setQty("${id}", ${qty+1})'>+</button>
+          </div>
+          <div><strong>${money(line)}</strong> <span class='remove' onclick='removeFromCart("${id}")'>×</span></div>
+        </div>`
+      });
+      list.innerHTML = html;
+      document.getElementById('cartSubtotal').textContent = money(sum);
+    }
+
+    /* ------------------------------
+       Checkout (Demo)
+    ------------------------------ */
+    function openCheckout(){
+      const cart = store.cart.map(i=>({ ...i, p: store.products.find(p=>p.id===i.id) })).filter(x=>x.p);
+      if(cart.length===0){ alert('Cart is empty.'); return; }
+      const sum = cart.reduce((s,i)=>s+i.p.price*i.qty,0);
+      document.getElementById('co_summary').innerHTML = cart.map(i=>`<div class='flex' style='justify-content:space-between'><span>${i.p.name} × ${i.qty}</span><span>${money(i.p.price*i.qty)}</span></div>`).join('');
+      document.getElementById('co_total').textContent = money(sum);
+      checkoutModal.showModal();
+    }
+
+    function placeOrder(){
+      const name = document.getElementById('co_name').value.trim();
+      const email = document.getElementById('co_email').value.trim();
+      const phone = document.getElementById('co_phone').value.trim();
+      const address = document.getElementById('co_address').value.trim();
+      if(!name||!email||!phone||!address){ alert('Please fill all customer info.'); return; }
+      const cart = store.cart.map(i=>({ ...i, p: store.products.find(p=>p.id===i.id) })).filter(x=>x.p);
+      const total = cart.reduce((s,i)=>s+i.p.price*i.qty,0);
+      const order = { id:'ORD-'+Date.now(), user:store.me?.email||email, items:cart.map(i=>({id:i.id, qty:i.qty})), total, status:'Placed', createdAt: new Date().toISOString(), address };
+      const orders = store.orders; orders.unshift(order); store.orders = orders;
+      store.cart = []; updateCartCount(); renderCart(); checkoutModal.close(); cartModal.close();
+      alert('Order placed! (Demo)');
+    }
+
+    /* ------------------------------
+       Auth (Demo)
+    ------------------------------ */
+    function doLogin(){
+      const email = document.getElementById('li_email').value.trim();
+      const pass = document.getElementById('li_pass').value;
+      const u = store.users.find(u=>u.email===email && u.pass===pass);
+      if(!u) return alert('Invalid credentials (demo).');
+      store.me = {name:u.name, email:u.email};
+      authModal.close();
+      document.getElementById('btnLogin').textContent = 'Logout';
+    }
+    function doRegister(){
+      const name = document.getElementById('re_name').value.trim();
+      const email = document.getElementById('re_email').value.trim();
+      const phone = document.getElementById('re_phone').value.trim();
+      const pass = document.getElementById('re_pass').value;
+      if(!name||!email||!pass) return alert('Fill required fields.');
+      const users = store.users; if(users.some(u=>u.email===email)) return alert('Email exists.');
+      users.push({name,email,phone,pass}); store.users = users; alert('Registered (demo). Now login.');
+      document.getElementById('kpiUsers').textContent = store.users.length;
+    }
+
+    /* ------------------------------
+       Admin add product (Demo)
+    ------------------------------ */
+    function addProduct(){
+      const name = document.getElementById('ap_name').value.trim();
+      const category = document.getElementById('ap_cat').value.trim();
+      const price = parseInt(document.getElementById('ap_price').value,10);
+      const image = document.getElementById('ap_img').value.trim();
+      if(!name||!category||!price||!image){ alert('Fill all fields.'); return; }
+      const id = category.slice(0,3).toUpperCase()+ '-' + Math.floor(1000+Math.random()*9000);
+      const p = {id,name,category,price,rating:4.3,image,desc:'New product'};
+      const list = store.products; list.unshift(p); store.products = list; renderProducts(); alert('Product added (demo).');
+      document.getElementById('ap_name').value=''; document.getElementById('ap_cat').value=''; document.getElementById('ap_price').value=''; document.getElementById('ap_img').value='';
+    }
+
+    /* ------------------------------
+       Events & Init
+    ------------------------------ */
+    document.getElementById('btnCart').onclick = ()=>{ renderCart(); cartModal.showModal(); };
+    document.getElementById('btnCheckout').onclick = openCheckout;
+    document.getElementById('co_place').onclick = placeOrder;
+
+    globalSearch.addEventListener('keydown', e=>{ if(e.key==='Enter'){ location.hash = '#shop'; search.value = globalSearch.value; renderProducts(); } });
+    search.oninput = renderProducts; sortSel.onchange = renderProducts;
+
+    document.getElementById('btnLogin').onclick = ()=>{
+      if(store.me){ if(confirm('Logout now?')){ store.me=null; document.getElementById('btnLogin').textContent='Login'; } }
+      else authModal.showModal();
+    };
+    document.getElementById('btnDoLogin').onclick = doLogin;
+    document.getElementById('btnDoRegister').onclick = doRegister;
+
+    document.getElementById('btnAddProduct').onclick = addProduct;
+
+    // category quick links on hero cards
+    document.querySelectorAll('[data-cat]').forEach(el=> el.addEventListener('click', e=>{
+      e.preventDefault(); location.hash = '#shop'; currentCategory = el.dataset.cat; renderTabs(); renderProducts();
+    }));
+
+    // Initial render
+    renderTabs(); renderProducts(); renderDeals(); updateCartCount();
+  </script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ElectroMart — Electronics E‑commerce Demo</title>
+  <style>
+    :root{
+      --bg:#0f172a; /* slate-900 */
+      --panel:#111827; /* gray-900 */
+      --muted:#1f2937; /* gray-800 */
+      --card:#0b1220; /* custom */
+      --text:#e5e7eb; /* gray-200 */
+      --sub:#9ca3af; /* gray-400 */
+      --brand:#22c55e; /* green-500 */
+      --brand-2:#3b82f6; /* blue-500 */
+      --accent:#f59e0b; /* amber-500 */
+      --danger:#ef4444; /* red-500 */
+      --radius:18px;
+      --shadow:0 20px 35px rgba(0,0,0,.35);
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:radial-gradient(1200px 600px at 10% -10%, #1e293b 0%, var(--bg) 40%),linear-gradient(180deg, #0b1220, var(--bg));color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial,sans-serif;}
+    a{color:inherit;text-decoration:none}
+    img{max-width:100%;display:block}
+    .container{max-width:1200px;margin:0 auto;padding:24px}
+    header{position:sticky;top:0;z-index:50;background:rgba(17,24,39,.7);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.06)}
+    .nav{display:flex;align-items:center;gap:16px;}
+    .brand{font-weight:800;font-size:22px;letter-spacing:.4px}
+    .brand span{color:var(--brand)}
+    .grow{flex:1}
+    .search{display:flex;gap:10px;align-items:center;background:var(--muted);border-radius:999px;padding:10px 14px;width:100%;max-width:520px;border:1px solid rgba(255,255,255,.06)}
+    .search input{all:unset;color:var(--text);width:100%}
+    .btn{cursor:pointer;border:1px solid transparent;border-radius:999px;padding:10px 16px;background:var(--brand);color:#04110a;font-weight:700;box-shadow:var(--shadow);transition:.2s}
+    .btn:hover{transform:translateY(-1px);filter:brightness(1.06)}
+    .btn.secondary{background:var(--muted);color:var(--text);border-color:rgba(255,255,255,.06)}
+    .btn.ghost{background:transparent;border-color:rgba(255,255,255,.14);color:var(--text)}
+    .pill{padding:6px 12px;border:1px solid rgba(255,255,255,.08);border-radius:999px;background:rgba(255,255,255,.04)}
+    .grid{display:grid;gap:18px}
+    .grid.cols-4{grid-template-columns:repeat(4,minmax(0,1fr))}
+    .grid.cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .grid.cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+    @media (max-width:1000px){.grid.cols-4{grid-template-columns:repeat(3,1fr)}}
+    @media (max-width:760px){.grid.cols-3,.grid.cols-4{grid-template-columns:repeat(2,1fr)}.search{display:none}}
+    @media (max-width:520px){.grid.cols-2,.grid.cols-3,.grid.cols-4{grid-template-columns:1fr}}
+    .card{background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
+    .card .content{padding:14px}
+    .price{font-weight:800}
+    .muted{color:var(--sub)}
+    .hero{display:grid;grid-template-columns:1.5fr 1fr;gap:20px;align-items:center}
+    @media (max-width:900px){.hero{grid-template-columns:1fr}}
+    .banner{background:linear-gradient(135deg,#0ea5e9,#22c55e);border-radius:var(--radius);padding:34px;position:relative;overflow:hidden}
+    .banner h1{margin:0 0 8px;font-size:42px}
+    .banner p{margin:0 0 16px;color:#052014}
+    .banner img.mock{position:absolute;right:-40px;bottom:-20px;opacity:.15;filter:drop-shadow(0 20px 40px rgba(0,0,0,.5));width:420px}
+    .toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+    .toolbar select,.toolbar input{background:var(--muted);border:1px solid rgba(255,255,255,.08);color:var(--text);padding:10px 12px;border-radius:12px}
+    .toolbar input{width:240px}
+    .tabs{display:flex;gap:8px;flex-wrap:wrap}
+    .tab{cursor:pointer;padding:10px 14px;border-radius:12px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04)}
+    .tab.active{background:var(--brand);color:#07160e;font-weight:800}
+    .footer{color:var(--sub);padding:24px 0;border-top:1px solid rgba(255,255,255,.06);margin-top:40px}
+    .section-title{display:flex;justify-content:space-between;align-items:center;margin:24px 0 12px}
+    /* Modal */
+    dialog{border:none;border-radius:20px;padding:0;background:var(--panel);color:var(--text);box-shadow:var(--shadow);width:min(760px,95vw)}
+    dialog::backdrop{background:rgba(0,0,0,.6)}
+    .modal-head{display:flex;justify-content:space-between;align-items:center;padding:16px 18px;border-bottom:1px solid rgba(255,255,255,.08)}
+    .modal-body{padding:18px}
+    .x{cursor:pointer;border:none;background:transparent;color:var(--text);font-size:22px}
+    .flex{display:flex;gap:18px;align-items:flex-start}
+    .flex-col{display:flex;flex-direction:column;gap:12px}
+    .w-50{width:50%}
+    @media (max-width:760px){.flex{flex-direction:column}.w-50{width:100%}}
+    .qty{display:flex;align-items:center;gap:8px}
+    .qty button{width:28px;height:28px;border-radius:8px;border:1px solid rgba(255,255,255,.2);background:transparent;color:var(--text);cursor:pointer}
+    .cart-row{display:grid;grid-template-columns:64px 1fr auto auto auto;gap:12px;align-items:center;padding:12px;border-bottom:1px dashed rgba(255,255,255,.08)}
+    .cart-row .remove{color:var(--danger);cursor:pointer}
+    .kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+    @media (max-width:760px){.kpi{grid-template-columns:repeat(2,1fr)}}
+    .kpi .tile{padding:16px;border-radius:16px;background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.08)}
+    small.code{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;color:var(--sub)}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container nav">
+      <a href="#home" class="brand">Electro<span>Mart</span></a>
+      <div class="grow"></div>
+      <div class="search"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21 21l-4.3-4.3M10.5 18a7.5 7.5 0 100-15 7.5 7.5 0 000 15z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <input id="globalSearch" placeholder="Search products... (e.g., laptop)" />
+      </div>
+      <button class="btn secondary" id="btnLogin">Login</button>
+      <button class="btn" id="btnCart">Cart (<span id="cartCount">0</span>)</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- HERO / HOME -->
+    <section id="home" class="hero">
+      <div class="banner">
+        <h1>Everything Electronics</h1>
+        <p>Shop laptops, mobiles, tablets, headphones, and accessories at unbeatable prices.</p>
+        <div class="toolbar">
+          <a href="#shop" class="btn">Shop Now</a>
+          <a href="#deals" class="btn ghost">Today’s Deals</a>
+          <span class="pill">Free Delivery over ৳5,000</span>
+        </div>
+        <img class="mock" src="https://images.unsplash.com/photo-1518779578993-ec3579fee39f?q=80&w=1200&auto=format&fit=crop" alt="electronics"/>
+      </div>
+      <div class="grid cols-2">
+        <div class="card">
+          <img src="https://images.unsplash.com/photo-1517336714731-489689fd1ca8?q=80&w=800&auto=format&fit=crop" alt="Laptops"/>
+          <div class="content">
+            <div class="section-title"><h3>Laptops</h3><a href="#shop" class="pill" data-cat="Laptop">Shop</a></div>
+            <p class="muted">Powerful ultrabooks, gaming rigs, and budget laptops.</p>
+          </div>
+        </div>
+        <div class="card">
+          <img src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?q=80&w=800&auto=format&fit=crop" alt="Mobiles"/>
+          <div class="content">
+            <div class="section-title"><h3>Mobiles</h3><a href="#shop" class="pill" data-cat="Mobile">Shop</a></div>
+            <p class="muted">Android, iOS, flagship and value phones.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SHOP LISTING -->
+    <section id="shop" style="margin-top:36px">
+      <div class="section-title">
+        <h2>Products</h2>
+        <div class="tabs" id="catTabs"></div>
+      </div>
+      <div class="toolbar" style="margin-bottom:12px">
+        <input id="search" placeholder="Filter within category..." />
+        <select id="sort">
+          <option value="pop">Sort: Popular</option>
+          <option value="lh">Price: Low → High</option>
+          <option value="hl">Price: High → Low</option>
+          <option value="az">Name: A → Z</option>
+        </select>
+        <div class="pill">Items found: <span id="found">0</span></div>
+      </div>
+      <div class="grid cols-4" id="productGrid"></div>
+    </section>
+
+    <!-- DEALS (simple showcase) -->
+    <section id="deals" style="margin-top:36px">
+      <div class="section-title"><h2>Today’s Deals</h2><a href="#shop" class="pill">View all</a></div>
+      <div class="grid cols-3" id="dealGrid"></div>
+    </section>
+
+    <!-- ADMIN (demo) -->
+    <section id="admin" style="margin-top:36px">
+      <div class="section-title"><h2>Admin Panel (Demo)</h2><span class="pill">No backend — uses localStorage</span></div>
+      <div class="kpi">
+        <div class="tile"><div class="muted">Total Products</div><div id="kpiProducts" class="price">0</div></div>
+        <div class="tile"><div class="muted">Total Users</div><div id="kpiUsers" class="price">0</div></div>
+        <div class="tile"><div class="muted">Orders (Demo)</div><div id="kpiOrders" class="price">0</div></div>
+        <div class="tile"><div class="muted">Revenue (Demo)</div><div id="kpiRevenue" class="price">৳0</div></div>
+      </div>
+      <div class="card" style="margin-top:16px">
+        <div class="content">
+          <h3>Add Product</h3>
+          <div class="grid cols-2">
+            <input id="ap_name" placeholder="Name"/>
+            <input id="ap_cat" placeholder="Category (Laptop/Mobile/Tablet/Headphone/Accessory)"/>
+            <input id="ap_price" type="number" placeholder="Price (number)"/>
+            <input id="ap_img" placeholder="Image URL"/>
+          </div>
+          <div class="flex" style="margin-top:12px"><button class="btn" id="btnAddProduct">Add</button><span class="muted">Added items persist in localStorage.</span></div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div class="grid cols-3">
+        <div>
+          <div class="brand">Electro<span>Mart</span></div>
+          <p class="muted">Your one‑stop electronics shop. This is a front‑end demo; hook it to a PHP/MySQL backend.</p>
+        </div>
+        <div>
+          <div class="muted">Quick Links</div>
+          <p><a href="#home">Home</a> · <a href="#shop">Shop</a> · <a href="#admin">Admin</a></p>
+        </div>
+        <div>
+          <div class="muted">Contact</div>
+          <p>support@electromart.local</p>
+          <small class="code">Demo build · No real checkout</small>
+        </div>
+      </div>
+    </footer>
+  </main>
+
+  <!-- PRODUCT MODAL -->
+  <dialog id="productModal">
+    <div class="modal-head"><strong id="pm_title">Product</strong><button class="x" onclick="productModal.close()">×</button></div>
+    <div class="modal-body">
+      <div class="flex">
+        <div class="w-50"><img id="pm_image" alt="product"/></div>
+        <div class="w-50 flex-col">
+          <div class="muted" id="pm_category"></div>
+          <div class="price" id="pm_price">৳0</div>
+          <p id="pm_desc" class="muted"></p>
+          <div class="qty">
+            <button onclick="chgQty(-1)">−</button>
+            <span id="pm_qty">1</span>
+            <button onclick="chgQty(1)">+</button>
+          </div>
+          <div class="flex" style="margin-top:10px">
+            <button class="btn" id="pm_add">Add to Cart</button>
+            <button class="btn secondary" onclick="productModal.close()">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- CART MODAL -->
+  <dialog id="cartModal">
+    <div class="modal-head"><strong>Shopping Cart</strong><button class="x" onclick="cartModal.close()">×</button></div>
+    <div class="modal-body">
+      <div id="cartList"></div>
+      <div class="flex" style="justify-content:space-between;margin-top:12px">
+        <div><span class="muted">Subtotal:</span> <strong id="cartSubtotal">৳0</strong></div>
+        <div class="flex" style="gap:8px">
+          <button class="btn secondary" onclick="clearCart()">Clear</button>
+          <button class="btn" id="btnCheckout">Checkout</button>
+        </div>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- CHECKOUT MODAL -->
+  <dialog id="checkoutModal">
+    <div class="modal-head"><strong>Checkout</strong><button class="x" onclick="checkoutModal.close()">×</button></div>
+    <div class="modal-body">
+      <div class="grid cols-2">
+        <div class="card"><div class="content">
+          <h3>Customer Info</h3>
+          <div class="flex-col">
+            <input id="co_name" placeholder="Full Name"/>
+            <input id="co_email" placeholder="Email"/>
+            <input id="co_phone" placeholder="Phone"/>
+            <input id="co_address" placeholder="Address"/>
+            <select id="co_payment">
+              <option value="cod">Cash on Delivery</option>
+              <option value="card" disabled>Card (Demo)</option>
+            </select>
+          </div>
+        </div></div>
+        <div class="card"><div class="content">
+          <h3>Order Summary</h3>
+          <div id="co_summary"></div>
+          <div style="margin-top:12px"><span class="muted">Total:</span> <strong id="co_total">৳0</strong></div>
+          <button class="btn" style="margin-top:12px" id="co_place">Place Order</button>
+        </div></div>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- AUTH MODAL -->
+  <dialog id="authModal">
+    <div class="modal-head"><strong id="authTitle">Login</strong><button class="x" onclick="authModal.close()">×</button></div>
+    <div class="modal-body">
+      <div class="grid cols-2">
+        <div class="card"><div class="content">
+          <h3>Login</h3>
+          <input id="li_email" placeholder="Email"/>
+          <input id="li_pass" placeholder="Password" type="password" style="margin-top:8px"/>
+          <button class="btn" style="margin-top:12px" id="btnDoLogin">Login</button>
+        </div></div>
+        <div class="card"><div class="content">
+          <h3>Register</h3>
+          <input id="re_name" placeholder="Name"/>
+          <input id="re_email" placeholder="Email" style="margin-top:8px"/>
+          <input id="re_phone" placeholder="Phone" style="margin-top:8px"/>
+          <input id="re_pass" placeholder="Password" type="password" style="margin-top:8px"/>
+          <button class="btn" style="margin-top:12px" id="btnDoRegister">Register</button>
+        </div></div>
+      </div>
+      <small class="muted">Demo auth stores users in <code>localStorage</code>. Replace with secure PHP sessions + hashed passwords in production.</small>
+    </div>
+  </dialog>
+
+  <script>
+    /* ------------------------------
+       Data (seed + storage)
+    ------------------------------ */
+    const seedProducts = [
+      {id:'LAP-1001', name:'AeroBook X14 Ultrabook', category:'Laptop', price:89990, rating:4.6, image:'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?q=80&w=1200&auto=format&fit=crop', desc:'14" FHD, i5 12th Gen, 16GB RAM, 512GB SSD, backlit keyboard.'},
+      {id:'LAP-1002', name:'Titan Pro 15 Gaming', category:'Laptop', price:139990, rating:4.7, image:'https://images.unsplash.com/photo-1518779578993-ec3579fee39f?q=80&w=1200&auto=format&fit=crop', desc:'15.6" 165Hz, i7, RTX 4060, 16GB RAM, 1TB SSD.'},
+      {id:'MOB-2001', name:'Nova One 5G', category:'Mobile', price:24990, rating:4.4, image:'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?q=80&w=1200&auto=format&fit=crop', desc:'6.5" AMOLED, 8GB/128GB, 50MP camera, 5000mAh.'},
+      {id:'MOB-2002', name:'iFruit 14', category:'Mobile', price:119999, rating:4.8, image:'https://images.unsplash.com/photo-1510557880182-3bb7a4ab07cc?q=80&w=1200&auto=format&fit=crop', desc:'6.1" OLED, 128GB, A‑series chip, dual camera.'},
+      {id:'TAB-3001', name:'Tabster 11 Pro', category:'Tablet', price:44990, rating:4.5, image:'https://images.unsplash.com/photo-1537498425277-c283d32ef9db?q=80&w=1200&auto=format&fit=crop', desc:'11" 120Hz, stylus support, 8GB/256GB.'},
+      {id:'HDP-4001', name:'SonicMax Headphones', category:'Headphone', price:7990, rating:4.2, image:'https://images.unsplash.com/photo-1518441902111-a14bb8160f8c?q=80&w=1200&auto=format&fit=crop', desc:'Over‑ear, ANC, 40h battery, BT 5.3.'},
+      {id:'ACC-5001', name:'USB‑C GaN Charger 65W', category:'Accessory', price:2990, rating:4.6, image:'https://images.unsplash.com/photo-1555617107-08c5a5df237b?q=80&w=1200&auto=format&fit=crop', desc:'Compact multi‑port fast charger.'},
+      {id:'ACC-5002', name:'NVMe SSD 1TB', category:'Accessory', price:7990, rating:4.7, image:'https://images.unsplash.com/photo-1591488320449-011701bb6702?q=80&w=1200&auto=format&fit=crop', desc:'PCIe Gen3 x4, up to 3500MB/s.'}
+    ];
+
+    const store = {
+      get products(){
+        const ls = localStorage.getItem('em_products');
+        if(ls){try{return JSON.parse(ls)}catch(e){}}
+        return seedProducts;
+      },
+      set products(v){localStorage.setItem('em_products', JSON.stringify(v))},
+      get cart(){
+        const ls = localStorage.getItem('em_cart');
+        return ls? JSON.parse(ls): [];
+      },
+      set cart(v){localStorage.setItem('em_cart', JSON.stringify(v))},
+      get users(){
+        const ls = localStorage.getItem('em_users');
+        return ls? JSON.parse(ls): [];
+      },
+      set users(v){localStorage.setItem('em_users', JSON.stringify(v))},
+      get orders(){
+        const ls = localStorage.getItem('em_orders');
+        return ls? JSON.parse(ls): [];
+      },
+      set orders(v){localStorage.setItem('em_orders', JSON.stringify(v))},
+      get me(){
+        const ls = localStorage.getItem('em_me');
+        return ls? JSON.parse(ls): null;
+      },
+      set me(v){ if(v) localStorage.setItem('em_me', JSON.stringify(v)); else localStorage.removeItem('em_me'); }
+    };
+
+    /* ------------------------------
+       UI Helpers
+    ------------------------------ */
+    const grid = document.getElementById('productGrid');
+    const deals = document.getElementById('dealGrid');
+    const catTabs = document.getElementById('catTabs');
+    const found = document.getElementById('found');
+    const sortSel = document.getElementById('sort');
+    const search = document.getElementById('search');
+    const globalSearch = document.getElementById('globalSearch');
+    const cartCount = document.getElementById('cartCount');
+    const productModal = document.getElementById('productModal');
+    const cartModal = document.getElementById('cartModal');
+    const checkoutModal = document.getElementById('checkoutModal');
+    const authModal = document.getElementById('authModal');
+
+    let currentCategory = 'All';
+    let modalProduct = null;
+    let modalQty = 1;
+
+    const categories = ['All','Laptop','Mobile','Tablet','Headphone','Accessory'];
+
+    function money(n){ return '৳' + n.toLocaleString('en-IN'); }
+
+    function renderTabs(){
+      catTabs.innerHTML = '';
+      categories.forEach(cat=>{
+        const el = document.createElement('div');
+        el.className = 'tab' + (cat===currentCategory?' active':'');
+        el.textContent = cat;
+        el.onclick = ()=>{currentCategory=cat; renderProducts();}
+        catTabs.appendChild(el);
+      })
+    }
+
+    function queryProducts(){
+      let list = [...store.products];
+      if(currentCategory!=='All') list = list.filter(p=>p.category===currentCategory);
+      const q = (search.value||'').toLowerCase();
+      if(q) list = list.filter(p=> (p.name+p.desc+p.category).toLowerCase().includes(q));
+      switch(sortSel.value){
+        case 'lh': list.sort((a,b)=>a.price-b.price); break;
+        case 'hl': list.sort((a,b)=>b.price-a.price); break;
+        case 'az': list.sort((a,b)=>a.name.localeCompare(b.name)); break;
+        default: list.sort((a,b)=>b.rating-a.rating); break;
+      }
+      return list;
+    }
+
+    function cardHtml(p){
+      return `<div class="card">
+        <img src="${p.image}" alt="${p.name}">
+        <div class="content">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
+            <strong>${p.name}</strong>
+            <span class="pill">${p.category}</span>
+          </div>
+          <div class="muted">★ ${p.rating.toFixed(1)}</div>
+          <div class="flex" style="justify-content:space-between;align-items:center">
+            <div class="price">${money(p.price)}</div>
+            <div class="flex" style="gap:8px">
+              <button class="btn secondary" onclick='openProduct("${p.id}")'>Details</button>
+              <button class="btn" onclick='addToCart("${p.id}")'>Add</button>
+            </div>
+          </div>
+        </div>
+      </div>`
+    }
+
+    function renderProducts(){
+      const list = queryProducts();
+      found.textContent = list.length;
+      grid.innerHTML = list.map(cardHtml).join('');
+      // KPI updates
+      document.getElementById('kpiProducts').textContent = store.products.length;
+      document.getElementById('kpiUsers').textContent = store.users.length;
+      document.getElementById('kpiOrders').textContent = store.orders.length;
+      const rev = store.orders.reduce((s,o)=>s+o.total,0);
+      document.getElementById('kpiRevenue').textContent = money(rev);
+    }
+
+    function renderDeals(){
+      const list = [...store.products].sort((a,b)=>b.rating-a.rating).slice(0,3);
+      deals.innerHTML = list.map(p=>`<div class="card"><div class="content">
+        <div class="muted">Limited Time</div>
+        <h3>${p.name}</h3>
+        <p class="muted">${p.desc}</p>
+        <div class="flex" style="justify-content:space-between;align-items:center">
+          <div><span class="muted" style="text-decoration:line-through">${money(Math.round(p.price*1.12))}</span> <span class="price">${money(p.price)}</span></div>
+          <button class="btn" onclick='addToCart("${p.id}")'>Add to Cart</button>
+        </div>
+      </div></div>`).join('');
+    }
+
+    /* ------------------------------
+       Product Modal
+    ------------------------------ */
+    function openProduct(id){
+      const p = store.products.find(x=>x.id===id);
+      if(!p) return;
+      modalProduct = p; modalQty = 1;
+      document.getElementById('pm_title').textContent = p.name;
+      document.getElementById('pm_category').textContent = p.category + ' · ★ ' + p.rating.toFixed(1);
+      document.getElementById('pm_price').textContent = money(p.price);
+      document.getElementById('pm_desc').textContent = p.desc;
+      document.getElementById('pm_image').src = p.image;
+      document.getElementById('pm_qty').textContent = modalQty;
+      document.getElementById('pm_add').onclick = ()=>{ addToCart(p.id, modalQty); productModal.close(); };
+      productModal.showModal();
+    }
+    function chgQty(d){ modalQty = Math.max(1, modalQty + d); document.getElementById('pm_qty').textContent = modalQty; }
+
+    /* ------------------------------
+       Cart
+    ------------------------------ */
+    function addToCart(id, qty=1){
+      const cart = store.cart;
+      const item = cart.find(i=>i.id===id);
+      if(item) item.qty += qty; else cart.push({id, qty});
+      store.cart = cart; updateCartCount();
+    }
+    function updateCartCount(){ cartCount.textContent = store.cart.reduce((s,i)=>s+i.qty,0); }
+    function removeFromCart(id){ store.cart = store.cart.filter(i=>i.id!==id); renderCart(); updateCartCount(); }
+    function setQty(id,qty){ const c=store.cart; const it=c.find(i=>i.id===id); if(it){it.qty=Math.max(1,qty)} store.cart=c; renderCart(); updateCartCount(); }
+    function clearCart(){ store.cart = []; renderCart(); updateCartCount(); }
+
+    function renderCart(){
+      const cart = store.cart.map(i=>({ ...i, p: store.products.find(p=>p.id===i.id) })).filter(x=>x.p);
+      const list = document.getElementById('cartList');
+      if(cart.length===0){ list.innerHTML = '<p class="muted">Your cart is empty.</p>'; document.getElementById('cartSubtotal').textContent = money(0); return; }
+      let html=''; let sum=0;
+      cart.forEach(({id,qty,p})=>{
+        const line = p.price*qty; sum+=line;
+        html+=`<div class='cart-row'>
+          <img src='${p.image}' alt='${p.name}'>
+          <div><strong>${p.name}</strong><div class='muted'>${p.category}</div></div>
+          <div>${money(p.price)}</div>
+          <div class='qty'>
+            <button onclick='setQty("${id}", ${qty-1})'>−</button>
+            <span>${qty}</span>
+            <button onclick='setQty("${id}", ${qty+1})'>+</button>
+          </div>
+          <div><strong>${money(line)}</strong> <span class='remove' onclick='removeFromCart("${id}")'>×</span></div>
+        </div>`
+      });
+      list.innerHTML = html;
+      document.getElementById('cartSubtotal').textContent = money(sum);
+    }
+
+    /* ------------------------------
+       Checkout (Demo)
+    ------------------------------ */
+    function openCheckout(){
+      const cart = store.cart.map(i=>({ ...i, p: store.products.find(p=>p.id===i.id) })).filter(x=>x.p);
+      if(cart.length===0){ alert('Cart is empty.'); return; }
+      const sum = cart.reduce((s,i)=>s+i.p.price*i.qty,0);
+      document.getElementById('co_summary').innerHTML = cart.map(i=>`<div class='flex' style='justify-content:space-between'><span>${i.p.name} × ${i.qty}</span><span>${money(i.p.price*i.qty)}</span></div>`).join('');
+      document.getElementById('co_total').textContent = money(sum);
+      checkoutModal.showModal();
+    }
+
+    function placeOrder(){
+      const name = document.getElementById('co_name').value.trim();
+      const email = document.getElementById('co_email').value.trim();
+      const phone = document.getElementById('co_phone').value.trim();
+      const address = document.getElementById('co_address').value.trim();
+      if(!name||!email||!phone||!address){ alert('Please fill all customer info.'); return; }
+      const cart = store.cart.map(i=>({ ...i, p: store.products.find(p=>p.id===i.id) })).filter(x=>x.p);
+      const total = cart.reduce((s,i)=>s+i.p.price*i.qty,0);
+      const order = { id:'ORD-'+Date.now(), user:store.me?.email||email, items:cart.map(i=>({id:i.id, qty:i.qty})), total, status:'Placed', createdAt: new Date().toISOString(), address };
+      const orders = store.orders; orders.unshift(order); store.orders = orders;
+      store.cart = []; updateCartCount(); renderCart(); checkoutModal.close(); cartModal.close();
+      alert('Order placed! (Demo)');
+    }
+
+    /* ------------------------------
+       Auth (Demo)
+    ------------------------------ */
+    function doLogin(){
+      const email = document.getElementById('li_email').value.trim();
+      const pass = document.getElementById('li_pass').value;
+      const u = store.users.find(u=>u.email===email && u.pass===pass);
+      if(!u) return alert('Invalid credentials (demo).');
+      store.me = {name:u.name, email:u.email};
+      authModal.close();
+      document.getElementById('btnLogin').textContent = 'Logout';
+    }
+    function doRegister(){
+      const name = document.getElementById('re_name').value.trim();
+      const email = document.getElementById('re_email').value.trim();
+      const phone = document.getElementById('re_phone').value.trim();
+      const pass = document.getElementById('re_pass').value;
+      if(!name||!email||!pass) return alert('Fill required fields.');
+      const users = store.users; if(users.some(u=>u.email===email)) return alert('Email exists.');
+      users.push({name,email,phone,pass}); store.users = users; alert('Registered (demo). Now login.');
+      document.getElementById('kpiUsers').textContent = store.users.length;
+    }
+
+    /* ------------------------------
+       Admin add product (Demo)
+    ------------------------------ */
+    function addProduct(){
+      const name = document.getElementById('ap_name').value.trim();
+      const category = document.getElementById('ap_cat').value.trim();
+      const price = parseInt(document.getElementById('ap_price').value,10);
+      const image = document.getElementById('ap_img').value.trim();
+      if(!name||!category||!price||!image){ alert('Fill all fields.'); return; }
+      const id = category.slice(0,3).toUpperCase()+ '-' + Math.floor(1000+Math.random()*9000);
+      const p = {id,name,category,price,rating:4.3,image,desc:'New product'};
+      const list = store.products; list.unshift(p); store.products = list; renderProducts(); alert('Product added (demo).');
+      document.getElementById('ap_name').value=''; document.getElementById('ap_cat').value=''; document.getElementById('ap_price').value=''; document.getElementById('ap_img').value='';
+    }
+
+    /* ------------------------------
+       Events & Init
+    ------------------------------ */
+    document.getElementById('btnCart').onclick = ()=>{ renderCart(); cartModal.showModal(); };
+    document.getElementById('btnCheckout').onclick = openCheckout;
+    document.getElementById('co_place').onclick = placeOrder;
+
+    globalSearch.addEventListener('keydown', e=>{ if(e.key==='Enter'){ location.hash = '#shop'; search.value = globalSearch.value; renderProducts(); } });
+    search.oninput = renderProducts; sortSel.onchange = renderProducts;
+
+    document.getElementById('btnLogin').onclick = ()=>{
+      if(store.me){ if(confirm('Logout now?')){ store.me=null; document.getElementById('btnLogin').textContent='Login'; } }
+      else authModal.showModal();
+    };
+    document.getElementById('btnDoLogin').onclick = doLogin;
+    document.getElementById('btnDoRegister').onclick = doRegister;
+
+    document.getElementById('btnAddProduct').onclick = addProduct;
+
+    // category quick links on hero cards
+    document.querySelectorAll('[data-cat]').forEach(el=> el.addEventListener('click', e=>{
+      e.preventDefault(); location.hash = '#shop'; currentCategory = el.dataset.cat; renderTabs(); renderProducts();
+    }));
+
+    // Initial render
+    renderTabs(); renderProducts(); renderDeals(); updateCartCount();
+  </script>
+</body>
+</html>
